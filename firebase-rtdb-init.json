@@ -1,0 +1,132 @@
+{
+    "users": {
+        "default_user": {
+            "profile": {
+                "fullName": "Andrei Popescu",
+                "income": 5000,
+                "currency": "RON",
+                "createdAt": "2026-03-22T00:00:00.000Z",
+                "updatedAt": "2026-03-22T00:00:00.000Z"
+            },
+            "settings": {
+                "notifications": true,
+                "gamification": true,
+                "currency": "RON",
+                "resetStreak": false,
+                "lastResetDate": null
+            },
+            "gamification": {
+                "xp": 840,
+                "level": 7,
+                "currentStreak": 5,
+                "longestStreak": 12,
+                "lastExpenseDate": "2026-03-21T13:24:00.000Z",
+                "weeklyStreak": {
+                    "monday": true,
+                    "tuesday": true,
+                    "wednesday": true,
+                    "thursday": false,
+                    "friday": true,
+                    "saturday": false,
+                    "sunday": false
+                },
+                "personality": {
+                    "saving": 70,
+                    "impulsive": 35,
+                    "conscientious": 60
+                }
+            },
+            "budget": {
+                "monthlyIncome": 5000,
+                "currentBalance": 2840,
+                "dailyBurnRate": 123,
+                "budgetStartDate": "2026-03-01T00:00:00.000Z",
+                "estimatedDaysLeft": 23,
+                "lastUpdated": "2026-03-22T00:00:00.000Z"
+            },
+            "expenses": {
+                "exp_1": {
+                    "name": "Mâncare",
+                    "amount": 47,
+                    "category": "Mâncare",
+                    "emoji": "🍔",
+                    "date": "21 mar",
+                    "timestamp": "2026-03-21T13:24:00.000Z",
+                    "createdAt": "2026-03-21T13:24:00.000Z"
+                },
+                "exp_2": {
+                    "name": "Uber",
+                    "amount": 22,
+                    "category": "Transport",
+                    "emoji": "🚗",
+                    "date": "21 mar",
+                    "timestamp": "2026-03-21T10:05:00.000Z",
+                    "createdAt": "2026-03-21T10:05:00.000Z"
+                },
+                "exp_3": {
+                    "name": "Cafea",
+                    "amount": 18,
+                    "category": "Mâncare",
+                    "emoji": "☕",
+                    "date": "21 mar",
+                    "timestamp": "2026-03-21T08:30:00.000Z",
+                    "createdAt": "2026-03-21T08:30:00.000Z"
+                },
+                "exp_4": {
+                    "name": "Ieșire cu prietenii",
+                    "amount": 180,
+                    "category": "Ieșiri",
+                    "emoji": "🎉",
+                    "date": "20 mar",
+                    "timestamp": "2026-03-20T22:10:00.000Z",
+                    "createdAt": "2026-03-20T22:10:00.000Z"
+                },
+                "exp_5": {
+                    "name": "Supermarket",
+                    "amount": 95,
+                    "category": "Mâncare",
+                    "emoji": "🛒",
+                    "date": "20 mar",
+                    "timestamp": "2026-03-20T17:00:00.000Z",
+                    "createdAt": "2026-03-20T17:00:00.000Z"
+                }
+            }
+        }
+    },
+    "categories": {
+        "list": [
+            {
+                "name": "Mâncare",
+                "emoji": "🍔"
+            },
+            {
+                "name": "Transport",
+                "emoji": "🚗"
+            },
+            {
+                "name": "Ieșiri",
+                "emoji": "🎉"
+            },
+            {
+                "name": "Shopping",
+                "emoji": "🛍"
+            },
+            {
+                "name": "Sănătate",
+                "emoji": "💊"
+            },
+            {
+                "name": "Abonamente",
+                "emoji": "📱"
+            },
+            {
+                "name": "Utilități",
+                "emoji": "💡"
+            },
+            {
+                "name": "Altele",
+                "emoji": "✦"
+            }
+        ]
+    }
+}
