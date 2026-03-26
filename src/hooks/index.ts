@@ -9,3 +9,6 @@ export { useBudget } from './useBudget';
 
 // Settings hook
 export { useSettings } from './useSettings';
+
+// Notifications hook
+export { useNotifications } from './useNotifications';
