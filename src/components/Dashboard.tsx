@@ -5,6 +5,7 @@ import { useUser, useExpenses, useBudget } from '../hooks';
 import { cn } from '../utils/cn';
 import { addToBalance } from '../actions/budget';
 import { Input, Button, Card } from './ui';
+import AdvisorTimeline from './AdvisorTimeline';
 import { Plus, X, Sparkles, TrendingDown, TrendingUp, AlertTriangle, DollarSign, Calendar, PiggyBank, TrendingUpIcon, Shield, Banknote, Clock, LineChart, BarChart3, Bitcoin } from 'lucide-react';
 import { generateInvestmentTips, getRiskColor, getRiskLabel, InvestmentTip } from '../utils/investments';
 
@@ -20,6 +21,8 @@ interface AIInsight {
   description: string;
   metric?: string;
 }
+
+
 
 // Generate a single AI-powered insight based on financial data
 // Focus on motivation and saving recommendations, NOT days left
@@ -181,8 +184,12 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigateToHistory }) => {
   }, [expenses]);
 
   // Calculate budget percentage
-  const budgetPct = budget ? ((budget.monthlyIncome - budget.currentBalance) / budget.monthlyIncome) : 0;
+  const budgetPct = budget && budget.monthlyIncome > 0
+    ? ((budget.monthlyIncome - budget.currentBalance) / budget.monthlyIncome)
+    : 0;
   const daysPct = budget ? (budget.estimatedDaysLeft / 30) : 1;
+  const clampedBudgetPct = Math.min(Math.max(budgetPct, 0), 1);
+  const clampedDaysPct = Math.min(Math.max(daysPct, 0), 1);
 
   // Get first name from profile
   const firstName = profile?.fullName?.split(' ')[0] || 'User';
@@ -196,7 +203,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigateToHistory }) => {
     const currentYear = now.getFullYear();
 
     const monthExpenses = expenses.filter(e => {
-      const expenseDate = new Date(e.date);
+      const expenseDate = new Date(e.timestamp);
       return expenseDate.getMonth() === currentMonth &&
         expenseDate.getFullYear() === currentYear;
     });
@@ -235,6 +242,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigateToHistory }) => {
 
   // Get emoji for chart coloring
   const maxValue = Math.max(...chartData.map(d => d.value), 1);
+
+
 
   // Add money modal state
   const [showAddMoneyModal, setShowAddMoneyModal] = useState(false);
@@ -339,7 +348,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigateToHistory }) => {
             {/* outer arc: budget used */}
             <motion.circle
               initial={{ strokeDashoffset: 659.7 }}
-              animate={{ strokeDashoffset: 659.7 * (1 - Math.min(budgetPct, 1)) }}
+              animate={{ strokeDashoffset: 659.7 * (1 - clampedBudgetPct) }}
               transition={{ duration: 1.4, ease: [0.34, 1.56, 0.64, 1] }}
               className="fill-none stroke-[url(#cg1)] stroke-[12] stroke-linecap-round"
               strokeDasharray={659.7}
@@ -351,7 +360,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigateToHistory }) => {
             {/* inner arc: days left */}
             <motion.circle
               initial={{ strokeDashoffset: 565.5 }}
-              animate={{ strokeDashoffset: 565.5 * (1 - Math.min(daysPct, 1)) }}
+              animate={{ strokeDashoffset: 565.5 * (1 - clampedDaysPct) }}
               transition={{ duration: 1.4, ease: [0.34, 1.56, 0.64, 1], delay: 0.2 }}
               className="fill-none stroke-[url(#cg2)] stroke-[8] stroke-linecap-round"
               strokeDasharray={565.5}
@@ -514,7 +523,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigateToHistory }) => {
         {[
           { label: 'Azi cheltuit', val: todayExpenses.toString(), sub: `față de ${dailyAverage} avg`, color: 'text-amber-primary', border: 'before:bg-linear-to-r before:from-transparent before:via-cyan-primary before:to-transparent' },
           { label: 'Media zilnică', val: budget?.dailyBurnRate?.toString() || '0', sub: 'lei / zi', color: 'text-cyan-primary', border: 'before:bg-linear-to-r before:from-transparent before:via-amber-primary before:to-transparent' },
-          { label: 'Buget', val: `${Math.round(budgetPct * 100)}% `, sub: 'cheltuit', color: 'text-purple-primary', border: 'before:bg-linear-to-r before:from-transparent before:via-purple-primary before:to-transparent' },
+          { label: 'Buget', val: `${Math.round(clampedBudgetPct * 100)}% `, sub: 'cheltuit', color: 'text-purple-primary', border: 'before:bg-linear-to-r before:from-transparent before:via-purple-primary before:to-transparent' },
         ].map((stat, i) => (
           <motion.div
             key={i}
@@ -533,6 +542,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigateToHistory }) => {
           </motion.div>
         ))}
       </div>
+
+      <AdvisorTimeline className="mb-2" />
 
       {/* CHART */}
       <div className="px-5 pb-2 text-[11px] text-text-muted uppercase tracking-widest flex justify-between items-center">
