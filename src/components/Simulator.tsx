@@ -60,7 +60,7 @@ const Simulator: React.FC = () => {
     >
       <div className="px-5 pt-12 pb-4">
         <div className="text-[11px] text-text-muted tracking-[0.1em] uppercase mb-1">Simulator</div>
-        <div className="text-[24px] font-extrabold tracking-tight">What-If 🔮</div>
+        <div className="text-[24px] font-extrabold tracking-[-0.02em]">What-If 🔮</div>
       </div>
 
       <div className="simulator-card mx-4 mb-3.5 p-[18px] bg-card border border-border-primary rounded-[20px] relative overflow-hidden">

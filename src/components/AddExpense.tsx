@@ -11,6 +11,7 @@ interface AddExpenseProps {
 const AddExpense: React.FC<AddExpenseProps> = ({ onAdd }) => {
   const [amount, setAmount] = useState('0');
   const [selectedCat, setSelectedCat] = useState<string | null>(null);
+  const [isRecurrent, setIsRecurrent] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -37,8 +38,8 @@ const AddExpense: React.FC<AddExpenseProps> = ({ onAdd }) => {
     setIsLoading(true);
 
     try {
-      // Add expense to Firebase: (name, amount, category, emoji)
-      const expenseId = await addExpense(expenseName, val, selectedCat, emoji);
+      // Add expense to Firebase: (name, amount, category, emoji, isRecurrent)
+      const expenseId = await addExpense(expenseName, val, selectedCat, emoji, isRecurrent);
 
       if (expenseId) {
         // Call the optional onAdd prop for backward compatibility
@@ -49,6 +50,7 @@ const AddExpense: React.FC<AddExpenseProps> = ({ onAdd }) => {
           setIsSuccess(false);
           setAmount('0');
           setSelectedCat(null);
+          setIsRecurrent(false);
         }, 1500);
       }
     } catch (error) {
@@ -66,7 +68,7 @@ const AddExpense: React.FC<AddExpenseProps> = ({ onAdd }) => {
       className="flex flex-col flex-1 pb-[88px]"
     >
       <div className="px-5 pt-12 pb-5">
-        <div className="text-[24px] font-extrabold tracking-tight bg-linear-to-br from-cyan-primary to-teal-primary bg-clip-text text-transparent mb-1">
+        <div className="text-[24px] font-extrabold tracking-[-0.02em] bg-linear-to-br from-cyan-primary to-teal-primary bg-clip-text text-transparent mb-1">
           Adaugă cheltuială
         </div>
         <div className="text-[12px] text-text-muted">Înregistrează rapid o cheltuială</div>
@@ -83,6 +85,22 @@ const AddExpense: React.FC<AddExpenseProps> = ({ onAdd }) => {
           {selectedCat ? `Categorie: ${selectedCat}` : 'Selectează o categorie'}
         </div>
       </div>
+
+      {/* Recurrent Toggle - appears only when Abonamente is selected */}
+      {selectedCat === 'Abonamente' && (
+        <div 
+          onClick={() => setIsRecurrent(!isRecurrent)}
+          className="mx-5 mb-4 p-3 rounded-xl border border-border-primary flex items-center justify-between cursor-pointer active:scale-[0.98] transition-transform"
+        >
+          <div className="flex items-center gap-2.5">
+            <span className="text-[14px]">🔄</span>
+            <span className="text-[13px] text-text-primary">Recurent lunar</span>
+          </div>
+          <div className={cn("w-10 h-5 rounded-full transition-colors", isRecurrent ? "bg-cyan-primary" : "bg-bg3")}>
+            <div className={cn("w-4 h-4 rounded-full bg-white shadow-sm transition-transform mt-0.5", isRecurrent ? "translate-x-5" : "translate-x-0.5 ml-0.5")} />
+          </div>
+        </div>
+      )}
 
       <div className="px-5 pb-2 text-[11px] text-text-muted uppercase tracking-widest"><span>Categorie</span></div>
       <div className="grid grid-cols-4 gap-2 mx-5 mb-4.5">

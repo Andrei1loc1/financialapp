@@ -14,6 +14,8 @@ export interface Expense {
     date: string;
     timestamp: string;
     createdAt: string;
+    isRecurrent?: boolean;
+    recurrentDay?: number;
 }
 
 /**
@@ -47,7 +49,8 @@ export async function addExpense(
     name: string,
     amount: number,
     category: string,
-    emoji: string
+    emoji: string,
+    isRecurrent: boolean = false
 ): Promise<string | null> {
     const uid = getCurrentUserId();
     const now = new Date();
@@ -72,7 +75,8 @@ export async function addExpense(
         emoji,
         date: dateStr,
         timestamp: now.toISOString(),
-        createdAt: now.toISOString()
+        createdAt: now.toISOString(),
+        ...(isRecurrent && { isRecurrent: true, recurrentDay: now.getDate() })
     };
 
     const expenseId = await pushData(`users/${uid}/expenses`, expense);
@@ -154,6 +158,52 @@ export function subscribeToExpenses(
             callback(expenses);
         }
     );
+}
+
+/**
+ * Delete all expenses for current user
+ */
+export async function deleteAllExpenses(): Promise<boolean> {
+    const uid = getCurrentUserId();
+    return setData(`users/${uid}/expenses`, null);
+}
+
+/**
+ * Create recurring expenses for current month
+ * Should be called on app load
+ */
+export async function createRecurringExpenses(): Promise<void> {
+    const expenses = await getExpenses();
+    const now = new Date();
+    const currentMonth = now.toLocaleDateString('ro-RO', { month: 'short' });
+    const currentDay = now.getDate();
+
+    // Find recurring expenses that need to be created this month
+    const recurringToCreate = expenses.filter(exp => 
+        exp.isRecurrent && 
+        exp.recurrentDay === currentDay &&
+        !exp.date.includes(currentMonth)
+    );
+
+    // Create each recurring expense
+    for (const exp of recurringToCreate) {
+        const dateStr = now.toLocaleDateString('ro-RO', {
+            day: 'numeric',
+            month: 'short'
+        });
+
+        await pushData(`users/${getCurrentUserId()}/expenses`, {
+            name: exp.name,
+            amount: exp.amount,
+            category: exp.category,
+            emoji: exp.emoji,
+            date: dateStr,
+            timestamp: now.toISOString(),
+            createdAt: now.toISOString()
+        });
+
+        await updateBudgetAfterExpense(exp.amount);
+    }
 }
 
 /**

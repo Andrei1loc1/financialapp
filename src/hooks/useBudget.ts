@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import {
     getBudget,
     updateBudget,
+    resetBudget,
     getBudgetPercentageUsed,
     getBudgetStatus,
     Budget
@@ -90,12 +91,30 @@ export function useBudget() {
         loadBudget();
     }, []);
 
+    const reset = useCallback(async () => {
+        try {
+            setError(null);
+            const success = await resetBudget();
+            if (success) {
+                await loadBudget();
+                return true;
+            }
+            setError('Failed to reset budget');
+            return false;
+        } catch (err) {
+            setError('Failed to reset budget');
+            console.error(err);
+            return false;
+        }
+    }, []);
+
     return {
         budget,
         percentage,
         loading,
         error,
         updateBudget: updateBudgetData,
+        reset,
         getStatus,
         refresh
     };

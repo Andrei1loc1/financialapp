@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { useUser, useSettings, useExpenses, useNotifications } from '../hooks';
+import { useUser, useSettings, useExpenses, useBudget, useNotifications } from '../hooks';
 import { cn } from '../utils/cn';
 import { Bell, BellOff, BellRing, Send } from 'lucide-react';
 
 const Settings: React.FC = () => {
   const { profile } = useUser();
   const { settings, loading } = useSettings();
-  const { expenses } = useExpenses();
+  const { expenses, clearAll } = useExpenses();
+  const { reset } = useBudget();
+  const [clearing, setClearing] = useState(false);
 
   // Calculate today's total for notifications
   const todayTotal = React.useMemo(() => {
@@ -27,6 +29,15 @@ const Settings: React.FC = () => {
 
   // Get first letter of name for avatar
   const avatarLetter = profile?.fullName?.charAt(0).toUpperCase() || 'U';
+
+  const handleClear = async () => {
+    if (expenses.length === 0) return;
+    if (!confirm('Ștergi toate cheltuielile și resetezi bugetul? Această acțiune nu poate fi anulată.')) return;
+    
+    setClearing(true);
+    await Promise.all([clearAll(), reset()]);
+    setClearing(false);
+  };
 
   if (loading) {
     return (
@@ -53,7 +64,7 @@ const Settings: React.FC = () => {
       <div className="px-5 pt-12 pb-4 flex justify-between items-center">
         <div>
           <div className="text-[11px] text-text-muted tracking-[0.1em] uppercase mb-1">Cont</div>
-          <div className="text-[24px] font-extrabold tracking-tight">Setări</div>
+          <div className="text-[24px] font-extrabold tracking-[-0.02em]">Setări</div>
         </div>
         <div className="w-[42px] h-[42px] rounded-full bg-linear-to-br from-cyan-secondary to-teal-primary flex items-center justify-center text-[17px] font-extrabold text-white">
           {avatarLetter}
@@ -75,6 +86,20 @@ const Settings: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Clear Button */}
+      {expenses.length > 0 && (
+        <div className="mx-4 mb-3.5">
+          <button
+            onClick={handleClear}
+            disabled={clearing}
+            className="w-full py-3 rounded-xl border border-red-primary/20 text-red-primary text-[12px] font-medium bg-red-primary/5 hover:bg-red-primary/10 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+          >
+            <span>✕</span>
+            <span>Clear toate cheltuielile</span>
+          </button>
+        </div>
+      )}
 
       <div className="px-5 pb-2 text-[11px] text-text-muted uppercase tracking-widest"><span>Preferințe</span></div>
       <div className="liquid-card mx-4 mb-3.5 p-0 overflow-hidden">
