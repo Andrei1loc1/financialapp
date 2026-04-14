@@ -4,6 +4,8 @@ import {
     addExpense,
     updateExpense,
     deleteExpense,
+    deleteAllExpenses,
+    createRecurringExpenses,
     getExpensesByDate,
     getCurrentMonthExpenses,
     getMonthlyExpensesTotal,
@@ -23,6 +25,7 @@ export function useExpenses() {
     // Load expenses on mount
     useEffect(() => {
         loadExpenses();
+        createRecurringExpenses();
 
         // Subscribe to real-time updates
         const unsubscribe = subscribeToExpenses((data) => {
@@ -50,11 +53,12 @@ export function useExpenses() {
         name: string,
         amount: number,
         category: string,
-        emoji: string
+        emoji: string,
+        isRecurrent: boolean = false
     ) => {
         try {
             setError(null);
-            const expenseId = await addExpense(name, amount, category, emoji);
+            const expenseId = await addExpense(name, amount, category, emoji, isRecurrent);
             if (expenseId) {
                 await loadExpenses();
                 return expenseId;
@@ -114,6 +118,23 @@ export function useExpenses() {
         return getExpensesGroupedByDate();
     }, []);
 
+    const clearAll = useCallback(async () => {
+        try {
+            setError(null);
+            const success = await deleteAllExpenses();
+            if (success) {
+                await loadExpenses();
+                return true;
+            }
+            setError('Failed to clear expenses');
+            return false;
+        } catch (err) {
+            setError('Failed to clear expenses');
+            console.error(err);
+            return false;
+        }
+    }, []);
+
     return {
         expenses,
         loading,
@@ -121,6 +142,7 @@ export function useExpenses() {
         addExpense: createExpense,
         updateExpense: editExpense,
         deleteExpense: removeExpense,
+        clearAll,
         getByDate,
         getMonthTotal,
         getGrouped,
